@@ -1,0 +1,201 @@
+ex 00
+
+ Создать класс Bureaucrat с:
+
+Константным именем (std::string const _name);
+Переменной int _grade, которая должна быть в диапазоне от 1 (лучший) до 150 (худший).
+Геттерами getName() и getGrade().
+Методами incrementGrade() и decrementGrade(), которые изменяют grade, но выбрасывают исключения, если выходит за границы.
+Перегрузкой оператора << для вывода информации о бюрократе.
+Обрабатывать исключения при неверных значениях grade
+
+При grade < 1 → выброс GradeTooHighException
+При grade > 150 → выброс GradeTooLowException
+Соблюдать Orthodox Canonical Form (кроме исключений):
+
+Конструктор копирования (Bureaucrat(const Bureaucrat&))
+Оператор присваивания (Bureaucrat& operator=(const Bureaucrat&))
+Деструктор (~Bureaucrat())
+Файл main.cpp должен тестировать класс
+
+Создавать объекты Bureaucrat.
+Проверять корректность работы методов и выброса исключений.
+
+ex 01
+
+Добавить класс Form с полями:
+
+_name → константное имя формы (std::string const)
+_isSigned → булево значение (изначально false)
+_gradeToSign → константный int, минимальный grade для подписи
+_gradeToExecute → константный int, минимальный grade для исполнения
+Ограничения gradeToSign и gradeToExecute:
+
+1 — наивысший, 150 — наименьший
+Если grade выходит за границы, выбрасываются исключения:
+Form::GradeTooHighException
+Form::GradeTooLowException
+Добавить Form::beSigned(Bureaucrat&)
+
+Проверяет, может ли бюрократ подписать форму (grade <= gradeToSign)
+Если да — ставит _isSigned = true
+Если нет — бросает GradeTooLowException
+Добавить Bureaucrat::signForm(Form&)
+
+Вызывает Form::beSigned()
+Если успешно — выводит <name> signed <form>
+Если не удалось — выводит <name> couldn't sign <form> because <reason>
+Обеспечить правильное копирование (Canonical Form):
+
+Конструктор копирования
+Оператор присваивания
+Деструктор
+Перегрузить operator<< для Form
+
+Должен корректно выводить всю информацию о форме
+Обновить main.cpp
+
+Создавать объекты Bureaucrat и Form
+Проверять все методы, включая исключения
+Обновить Makefile
+
+Мой пример для мейна:
+Вывод информации о бюрократе Bob
+
+Bob, bureaucrat grade 2
+➡️ У Боба уровень 2, что означает, что он довольно высокопоставленный бюрократ.
+
+2. Вывод информации о форме FormA (до подписания)
+
+Form FormA [signed: no, grade to sign: 3, grade to execute: 5]
+➡️ Форма FormA еще не подписана (signed: no)
+➡️ Для подписания нужен grade 3
+➡️ Для исполнения нужен grade 5
+
+Боб имеет grade 2, что выше (лучше), чем 3, значит, он сможет подписать!
+
+3. Боб подписывает FormA
+
+Bob signed FormA
+➡️ Боб успешно подписал форму, так как его grade (2) выше, чем 3
+
+4. Вывод информации о FormA (после подписания)
+
+Form FormA [signed: yes, grade to sign: 3, grade to execute: 5]
+➡️ Теперь форма подписана (signed: yes)
+➡️ Остальные данные остались без изменений
+
+5. Alice (бюрократ с grade 150) пытается подписать FormB
+
+Alice couldn't sign FormB because Grade too low!
+➡️ Алиса имеет grade 150, но для подписания FormB требуется grade 140
+➡️ Ошибка! Алиса не может подписать, выбрасывается исключение GradeTooLowException
+➡️ Выводится сообщение об ошибке
+
+ex02
+
+AForm (раньше Form)
+
+Теперь это абстрактный класс, потому что execute() объявлен как = 0 (чисто виртуальная функция).
+Поля name, gradeToSign, gradeToExecute, isSigned остались без изменений.
+Добавилось поле target, так как формы теперь выполняют конкретные действия.
+Новые классы форм:
+
+ShrubberyCreationForm (создаёт ASCII-дерево в файле).
+RobotomyRequestForm (проводит роботомизацию с шансом 50%).
+PresidentialPardonForm (дарует помилование).
+У всех этих классов есть свой execute(), который проверяет подпись и уровень бюрократа, затем выполняет действие.
+Bureaucrat
+
+Теперь может не только подписывать, но и выполнять формы (executeForm).
+Если выполнение успешно, выводит сообщение "Bureaucrat executed Form".
+Если нет – выдаёт ошибку "Bureaucrat couldn't execute Form because ...".
+Основные проверки в main()
+
+Бюрократы разных уровней пытаются подписывать и выполнять формы.
+Проверяются ошибки (Form not signed, Grade too low).
+Генерируются отчёты о том, что происходит.
+
+Bob signed Shrubbery Creation Form
+
+Боб подписал форму Shrubbery Creation Form (для дома).
+Shrubbery created at home
+
+После того как форма была подписана, Боб её исполнил, и была создана "шашлычная" ASCII-дерево в файле home_shrubbery.
+Bob executed Shrubbery Creation Form
+
+Боб выполнил форму Shrubbery Creation Form, то есть, инициировал создание ASCII-дерева (что было успешно).
+Bob signed Robotomy Request Form
+
+Боб подписал форму Robotomy Request Form для цели target1.
+Drilling noises...
+
+При исполнении формы, произошли "звуки сверления". Шанс был успешным (50%), и выполнение прошло с успехом.
+target1 has been robotomized successfully
+
+Цель target1 была роботизирована успешно (вывод зависит от случайности, но здесь успех).
+Bob executed Robotomy Request Form
+
+Боб успешно исполнил форму Robotomy Request Form, роботизация прошла.
+Bob signed Presidential Pardon Form
+
+Боб подписал форму Presidential Pardon Form для цели target2.
+target2 has been pardoned by Zaphod Beeblebrox
+
+Цель target2 была помилована президентом (высвечивается правильный вывод).
+Bob executed Presidential Pardon Form
+
+Боб успешно выполнил Presidential Pardon Form и помиловал цель.
+Alice signed Presidential Pardon Form
+
+Алиса подписала Presidential Pardon Form для другой цели.
+Alice couldn't execute Presidential Pardon Form because Grade too low to execute
+
+Алиса не смогла выполнить форму Presidential Pardon Form, так как её рейтинг был слишком низким для выполнения этой формы (требуется рейтинг ниже 5 для исполнения).
+
+ex03
+
+В данном упражнении вам нужно было реализовать класс Intern с методом makeForm(), который будет создавать объекты различных форм в зависимости от их названия. Ваша задача заключалась в следующем:
+
+Интерн должен уметь создавать формы. У него должен быть метод makeForm(), который принимает два параметра:
+
+formName (название формы),
+target (цель формы).
+В зависимости от названия формы, метод должен создать соответствующий объект формы (например, ShrubberyCreationForm, RobotomyRequestForm, PresidentialPardonForm) и вернуть его указатель. Если форма с таким названием не найдена, должно быть выведено сообщение об ошибке.
+
+Избегание использования if/else: Задание подчеркнуло, что нежелательно использовать длинные цепочки if/else, что заставляет использовать чистый и эффективный способ обработки, например, через массив указателей на функции или таблицу.
+
+Классы форм: Каждая форма должна быть отдельным классом, наследующим от AForm (абстрактного класса), и реализующим метод execute().
+
+Тестирование: Вы должны были продемонстрировать работу вашего класса Intern с тестами в главной функции (например, создать объект Intern и вызвать makeForm() с различными параметрами). Для проверки работы, вы также использовали классы Bureaucrat для подписания и выполнения форм.
+
+1. Тестирование работы с Bureaucrat и Forms:
+Bob signed Shrubbery Creation Form: Боб подписывает форму Shrubbery Creation Form.
+Shrubbery created at Garden: Создается кустарник в саду.
+Bob executed Shrubbery Creation Form: Боб выполняет форму и создает кустарник в каком-то месте.
+Bob signed Robotomy Request Form: Боб подписывает форму Robotomy Request Form.
+Drilling noises... Bender has been robotomized successfully: Ожидаются звуки бурения, и робот Бендер успешно роботизируется.
+Bob executed Robotomy Request Form: Боб выполняет форму, что приводит к роботизации.
+Bob signed Presidential Pardon Form: Боб подписывает форму Presidential Pardon Form.
+Alice has been pardoned by Zaphod Beeblebrox: Алисса получает помилование от Зефода Библброкса.
+Bob executed Presidential Pardon Form: Боб выполняет форму, и кто-то получает помилование.
+2. Тестирование работы с Intern:
+Intern creates robotomy request: Интерн создает форму Robotomy Request Form.
+Bob signed Robotomy Request Form: Боб подписывает форму.
+Drilling noises... Bender has been robotomized successfully: Ожидаются звуки бурения, и Бендер роботизируется.
+Bob executed Robotomy Request Form: Боб выполняет форму и роботизирует Бендера.
+Intern creates shrubbery creation: Интерн создает форму Shrubbery Creation Form.
+Bob signed Shrubbery Creation Form: Боб подписывает форму.
+Shrubbery created at Park: Кустарник создается в парке.
+Bob executed Shrubbery Creation Form: Боб выполняет форму и создается кустарник.
+Intern creates presidential pardon: Интерн создает форму Presidential Pardon Form.
+Bob signed Presidential Pardon Form: Боб подписывает форму.
+Charlie has been pardoned by Zaphod Beeblebrox: Чарли получает помилование от Зефода.
+Bob executed Presidential Pardon Form: Боб выполняет форму и предоставляет помилование.
+3. Ошибка при создании несуществующей формы:
+Error: Unknown form name "unknown form". Failed to create an unknown form.: Это сообщение возникает, если интерн пытается создать форму с неизвестным именем. В этом случае интерн должен обработать ошибку и вернуть соответствующее сообщение.
+Что тестируется:
+Подписание и выполнение форм — проверяется, может ли бюрократ (Bob) подписывать и выполнять различные формы (создание кустарников, роботизация, помилование).
+Создание форм через интерна — тестируется, может ли интерн создавать формы, а затем они подписываются и выполняются бюрократом.
+Обработка ошибок — проверяется, что интерн не может создать форму с неизвестным именем и обрабатывает это корректно (например, выводит сообщение об ошибке).
+
